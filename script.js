@@ -1,28 +1,52 @@
+// Wait until the entire HTML document is fully loaded
 document.addEventListener('DOMContentLoaded', function () {
+     // Input field for new task text
     const taskInput = document.getElementById('new-task');
+
+    // Button to add a task
     const addBtn = document.getElementById('add-btn');
+
+    // Container where all tasks will be rendered
     const taskList = document.getElementById('task-list');
+
+     // Filter buttons: All / Active / Completed
     const filterButtons = document.querySelectorAll('.filter-btn');
+
+    // Stats elements
     const totalTasksEl = document.getElementById('total-tasks');
     const completedTasksEl = document.getElementById('completed-tasks');
     const themeButtons = document.querySelectorAll('.theme-btn');
+
+    // Priority selection elements
     const priorityOptions = document.querySelectorAll('.priority-option');
-    const modeToggle = document.getElementById('mode-toggle');
+    const modeToggle = document.getElementById('mode-toggle');// Dark mode toggle button
     const prioritySelector = document.getElementById('priority-selector');
     const prioritySlider = document.getElementById('priority-slider');
+
+    // Due date & time inputs
     const taskDateInput = document.getElementById('task-date');
     const taskTimeInput = document.getElementById('task-time');
 
+
+    // Load tasks from localStorage or initialize empty array
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    // Current UI state
     let currentFilter = 'all';
     let currentPriority = 'medium';
     let currentTheme = 'purple-blue';
+
+    // Dark mode preference (default true)
     let darkMode = localStorage.getItem('darkMode') != 'false';
 
+
+    // Default RGB values used for glow and gradients
     document.documentElement.style.setProperty('--primary-rgb', '138, 43, 226');
     document.documentElement.style.setProperty('--secondary-rgb', '0, 198, 251');
     document.documentElement.style.setProperty('--success-rgb', '0, 230, 118');
     document.documentElement.style.setProperty('--danger-rgb', '255, 77, 77');
+
+     // Initializes the app on page load
 
     function init(){
         setTheme(darkMode?'dark':'light');
@@ -46,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 500);
     }
 
+    // Set today's date and current time as default values
     function updatePrioritySlider(){
         const selectedOption = document.querySelector('.priority-option.selected');
         if(selectedOption){
@@ -64,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Attaches all UI event listeners
     function setupEventListeners(){
         addBtn.addEventListener('click', addTask);
         taskInput.addEventListener('keypress', function(e){
@@ -106,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('resize', updatePrioritySlider);
     }
 
+     // Toggles dark and light mode
     function toggleDarkMode(){
         darkMode = !darkMode;
         localStorage.setItem('darkMode', darkMode);
@@ -117,12 +144,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 300);
     }
 
+    // Applies dark or light theme
+
     function setTheme(theme){
         document.documentElement.setAttribute('data-theme', theme);
         modeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         modeToggle.setAttribute('title', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
     }
 
+    // Applies color theme by updating CSS variables
     function applyColorTheme(theme){
         let primary, primaryDark, secondary;
 
@@ -160,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Adds a new task to the list
     function addTask(){
         const taskText = taskInput.value.trim();
         if(taskText === ''){
@@ -221,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 150);
     }
 
+    // Animates input box when empty task is submitted
     function animateInputError(){
         taskInput.style.borderColor = "var(--danger)";
         taskInput.animate([
@@ -238,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     }
 
+    // Renders tasks based on current filter
     function renderTasks(){
         taskList.innerHTML = '';
 
@@ -311,6 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Toggles completion state of a task
     function toggleTaskComplete(taskId){
         const taskIndex = tasks.findIndex(task => task.id === taskId);
         if(taskIndex === -1) return;
@@ -321,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateStats();
     }
 
+    // Deletes a task permanently
     function deleteTask(taskId){
         tasks = tasks.filter(task => task.id !== taskId);
         saveTasks();
@@ -328,6 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateStats();
     }
 
+     // Updates total and completed task counts
     function updateStats(){
         const totalTasks = tasks.length;
         const completedTasks = tasks.filter(task => task.completed).length;
@@ -336,9 +372,11 @@ document.addEventListener('DOMContentLoaded', function () {
         completedTasksEl.textContent = `${completedTasks} completed`;
     }
 
+    // Saves tasks to localStorage
     function saveTasks(){
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
+    // Start the app
     init();
 });
